@@ -1,5 +1,7 @@
 var { Component, Rect } = scene
 
+const REDRAW_PROPS = ['symbol', 'text', 'alttext', 'scale_h', 'scale_w', 'rot', 'showText']
+
 export default class Barcode extends Rect {
 
   _draw(ctx) {
@@ -27,7 +29,7 @@ export default class Barcode extends Rect {
     ctx.beginPath();
     ctx.globalAlpha = alpha;
 
-    if(!this.__cache__.loaded) {
+    if(!this.__valid__) {
       this.img = new Image();
 
       var self = this;
@@ -41,7 +43,7 @@ export default class Barcode extends Rect {
         }
 
         self.invalidate();
-        self.__cache__.loaded = true
+        self.__valid__ = true
       };
 
       if (!this.img.src) {
@@ -62,6 +64,16 @@ export default class Barcode extends Rect {
     }
   }
 
+  onchange(props) {
+
+    REDRAW_PROPS.every(prop => {
+      if(props.hasOwnProperty(prop)) {
+        this.__valid__ = false
+        return false
+      }
+      return true
+    })
+  }
 
   drawText(context) {}
 
