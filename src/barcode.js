@@ -29,7 +29,7 @@ export default class Barcode extends Rect {
     ctx.beginPath();
     ctx.globalAlpha = alpha;
 
-    if(!this.__valid__) {
+    if(!this.img) {
       this.img = new Image();
 
       var self = this;
@@ -43,23 +43,30 @@ export default class Barcode extends Rect {
         }
 
         self.invalidate();
-        self.__valid__ = true
       };
 
       if (!this.img.src) {
-        this.img.src = bwip.imageUrl({
-          symbol,
-          text,
-          alttext,
-          scale_h,
-          scale_w,
-          rotation: rot, // rotation 속성 이름 충돌되므로 rot로 변경함.
-        })
+        try {
+          this.img.src = bwip.imageUrl({
+            symbol,
+            text,
+            alttext,
+            scale_h,
+            scale_w,
+            rotation: rot, // rotation 속성 이름 충돌되므로 rot로 변경함.
+          })
+        } catch(e) {
+          console.log(e)
+        }
       }
     }
 
     if(!hidden){
-      ctx.drawImage(this.img, left, top, width, height);
+      try {
+        ctx.drawImage(this.img, left, top, width, height);
+      } catch(e) {
+        console.log(e)
+      }
       ctx.stroke();
     }
   }
@@ -68,7 +75,7 @@ export default class Barcode extends Rect {
 
     REDRAW_PROPS.every(prop => {
       if(props.hasOwnProperty(prop)) {
-        this.__valid__ = false
+        delete this.img
         return false
       }
       return true
