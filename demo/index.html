@@ -1,0 +1,242 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>things-scene-barcode Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+    <link rel="import" href="../../things-scene-viewer/things-scene-viewer.html">
+    <link rel="import" href="../../things-scene-viewer/things-scene-layer.html">
+    <link rel="import" href="../../things-scene-viewer/things-scene-handler.html">
+
+    <link rel="import" href="../../things-designer-elements/things-editor-color.html">
+    <link rel="import" href="../../things-designer-elements/things-editor-color-stops.html">
+    <link rel="import" href="../../things-designer-elements/things-editor-properties.html">
+    <link rel="import" href="../../things-scene-modeler/things-scene-properties.html">
+
+    <link rel="import" href="./things-scene-barcode.html">
+
+    <style is="custom-style">
+
+    @font-face {
+      font-family: "Bitstream Vera Serif Bold";
+      src: url("fonts/VeraSeBd.ttf");
+    }
+
+    things-scene-viewer {
+      display: block;
+      width: 100%;
+      height: 480px;
+    }
+    </style>
+  </head>
+  <body unresolved>
+
+    <template is="dom-bind" id="app">
+      <p>An example of <code>&lt;things-scene-barcode&gt;</code>:</p>
+
+      <things-scene-viewer id='scene'
+                           scene='{{scene}}'
+                           selected='{{selected}}'
+                           model='[[model]]'
+                           mode="1">
+        <things-scene-layer type="selection-layer"></things-scene-layer>
+        <things-scene-layer type="modeling-layer"></things-scene-layer>
+        <things-scene-handler type="text-editor"></things-scene-handler>
+        <things-scene-handler type="move-handler"></things-scene-handler>
+      </things-scene-viewer>
+
+      <fieldset class="same-width">
+        <legend>Barcode Properties</legend>
+        <things-scene-properties scene="[[scene]]"
+                                 selected="[[selected]]"
+                                 model="{{target}}"
+                                 bounds="{{bounds}}">
+          <things-editor-properties id="properties"
+                                    target="{{target}}"
+                                    props="{{props}}">
+          </things-editor-properties>
+        </things-scene-properties>
+      </fieldset>
+
+    </template>
+
+    <script>
+      window.addEventListener('WebComponentsReady', function(e) {
+        var app = document.querySelector('#app')
+
+        app.model = {
+          components: [{
+            type: 'text',
+            top: 30,
+            left: 30,
+            height: 30,
+            textAlign: 'left',
+            fontSize: '30',
+            fontFamily: 'serif',
+            text: '이 모델은 바코드 컴포넌트를 위한 샘플입니다.'
+          }, {
+
+            type: 'barcode',
+
+            left: 200,
+            top: 110,
+            height: 200,
+            symbol: "code39",
+            text: "1234567890",
+            alttext: "123",
+            scale_h: 1,
+            scale_w: 1,
+            rot: "N",
+            rotation: .1
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            height: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            rot: "N",
+            fromZpl: true,
+            rotation: Math.PI / 180 * 10,
+            centerRotate: false
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            height: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            rot: "N"
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            height: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            rot: "N",
+            rotation: Math.PI / 180 * 10
+          }]
+        };
+
+        app.props = [{
+          type: 'number',
+          label: 'Value',
+          name: 'value',
+          property: 'number'
+        }, {
+          type: 'number',
+          label: 'StartValue',
+          name: 'startValue',
+          property: 'number'
+        }, {
+          type: 'checkbox',
+          label: 'ShowStartValue',
+          name: 'showStartValue',
+          property: 'checkbox'
+        }, {
+          type: 'number',
+          label: 'EndValue',
+          name: 'endValue',
+          property: 'number'
+        }, {
+          type: 'checkbox',
+          label: 'ShowEndValue',
+          name: 'showEndValue',
+          property: 'checkbox'
+        }, {
+          type: 'number',
+          label: 'Step',
+          name: 'step',
+          property: 'number'
+        }, {
+          type: 'checkbox',
+          label: 'ShowStepLine',
+          name: 'showStepLine',
+          property: 'checkbox'
+        }, {
+          type: 'checkbox',
+          label: 'ShowStepText',
+          name: 'showStepText',
+          property: 'checkbox'
+        }, {
+          type: 'number',
+          label: 'SubTextSize',
+          name: 'subTextSize',
+          property: 'number'
+        }, {
+          type: 'number',
+          label: 'SubStep',
+          name: 'subStep',
+          property: 'number'
+        }, {
+          type: 'checkbox',
+          label: 'ShowSubStep',
+          name: 'showSubStep',
+          property: 'checkbox'
+        }, {
+          type: 'number',
+          label: 'StepNeedleSize',
+          name: 'stepNeedleSize',
+          property: 'number'
+        }, {
+          type: 'number',
+          label: 'StartAngle',
+          name: 'startAngle',
+          property: 'number'
+        }, {
+          type: 'number',
+          label: 'EndAngle',
+          name: 'endAngle',
+          property: 'number'
+        }, {
+          type: 'color',
+          label: 'TextFillStyle',
+          name: 'textFillStyle',
+          property: 'color'
+        }, {
+          type: 'color',
+          label: 'NeedleFillStyle',
+          name: 'needleFillStyle',
+          property: 'color'
+        }, {
+          type: 'color',
+          label: 'InnerCircleFillStyle',
+          name: 'innerCircleFillStyle',
+          property: 'color'
+        }, {
+          type: 'color',
+          label: 'StepFillStyle',
+          name: 'stepFillStyle',
+          property: 'color'
+        }, {
+          type: 'solid-color-stops',
+          label: 'COLOR STOPS',
+          name: 'colorStops',
+          property: {
+            min: 0,
+            max: 240
+          }
+        }]
+
+      });
+    </script>
+  </body>
+</html>
