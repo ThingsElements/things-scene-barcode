@@ -1,0 +1,202 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="things-websocket">
+  <template>
+    <style>
+    </style>
+
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'things-websocket',
+        properties: {
+          url: {
+            type: String,
+            notify: true,
+            observer: 'urlChanged'
+          },
+
+          // command: {
+          //   type: String,
+          //   notify: true,
+          //   observer: 'onSend'
+          // },
+
+          // json: {
+          //   type: Boolean,
+          //   notify: true,
+          //   value: false
+          // },
+
+          auto: {
+            type: Boolean,
+            notify: true,
+            value: false
+          }
+        },
+
+        listeners: {
+          'open': 'open',
+          'send': 'send',
+          'close': 'close'
+        },
+
+        /**
+         * {{url}} change handler.
+         * @private
+         */
+        urlChanged: function() {
+          if (this.auto) {
+            this.open();
+          }
+        },
+
+        /**
+         * WebSocket object.
+         * @private
+         * @type {WebSocket}
+         */
+        _ws: null,
+        /**
+         * Send data through the WebSocket connection. Will optionally be json-encoded if {{json}} or {{jsonSend}} is truthy.
+         * @public
+         * @param  {*} data The data to send.
+         */
+        send: function(e, detail) {
+          console.log(detail);
+          if(!this._ws) {
+            console.log('things-websocket.send(...): not connected.');
+            return;
+          }
+
+          // TODO check if ws was closed
+          if (this.readyState !== 1) {
+            console.log(this.readyState)
+            return;
+          }
+
+          if(detail) {
+            detail = JSON.stringify(detail);
+          }
+          this._ws.send(detail);
+        },
+        /**
+         * Open the connection if previously closed, or if {{auto}} is false.
+         * @public
+         */
+        open: function() {
+          this._connect();
+        },
+
+        close: function(reason) {
+          var ws = this._ws;
+          if(ws && ws.readyState) {
+            ws.close(reason);
+            ws = null;
+          }
+        },
+
+        /**
+         * Underlying connection readyState getter.
+         * @see {@link http://www.w3.org/TR/websockets/#dom-websocket-readystate}
+         * @public
+         * @type {Number}
+         */
+        get readyState() {
+          if(this._ws) {
+            return this._ws.readyState;
+          } else {
+            return -1;
+          }
+        },
+
+
+        /**
+         * Create a connection to the remote server identified by {{url}}.
+         * @private
+         */
+        _connect: function() {
+          if(!this.url) {
+            console.log('things-websocket.connect(...): no url.');
+            return;
+          }
+          if(this._ws) {
+            console.log('things-websocket.connect(...): already connected.');
+            return;
+          }
+
+          this._ws = new WebSocket(this.url);
+          this._ws.onopen = this._onwsopen.bind(this);
+          this._ws.onerror = this._onwserror.bind(this);
+          this._ws.onmessage = this._onwsmessage.bind(this);
+          this._ws.onclose = this._onwsclose.bind(this);
+        },
+        /**
+         * WebSocket open event handler. Re-fires to the x-websocket element.
+         * @private
+         */
+        _onwsopen: function() {
+          // this.fire("open");
+          console.log('WebSocket is avaliable');
+        },
+        /**
+         * WebSocket error event handler. Re-fires to the x-websocket element.
+         * @private
+         */
+        _onwserror: function() {
+          var message;
+          switch(this.readyState) {
+            case 0:
+              message = 'WebSocket ERROR: The connection is not yet open.'
+              break;
+            case 1:
+              message = 'WebSocket: The connection is open and ready to communicate.'
+              break;
+            case 2:
+              message = 'WebSocket ERROR: The connection is in the process of closing.'
+              break;
+            case 3:
+              message = 'WebSocket ERROR: The connection is closed or couldn\'t be opened.'
+              break;
+          }
+
+          console.log(message);
+        },
+        /**
+         * WebSocket message event handler. Re-fires to the x-websocket element, after optionally json-parsing the payload if {{json}} or {{jsonReceive}} is truthy.
+         * @private
+         */
+        _onwsmessage: function(event) {
+          var data = event.data;
+          if(this.json || this.jsonReceive) {
+            data = JSON.parse(data);
+          }
+          this.fire("message", { data: data });
+        },
+        /**
+         * WebSocket close event handler.
+         * @private
+         */
+        _onwsclose: function(event) {
+          console.log(event.reason);
+          this._ws = null;
+          // console.log('close');
+          // console.log(event);
+          // this.fire("error", { code: event.code, reason: event.reason });
+        },
+
+        _onToastMessage: function(message) {
+          if (this.showToastMsg) {
+            console.log(message);
+          } else {
+            console.log(message);
+          }
+        }
+      })
+    })();
+  </script>
+</dom-module>

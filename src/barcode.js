@@ -14,7 +14,7 @@ export default class Barcode extends Rect {
       left = 0,
       top = 0,
       width = 0,
-      height = 270,
+      height = 200,
       rot = 'N',
       rotation,
       alpha = 1,
@@ -31,15 +31,32 @@ export default class Barcode extends Rect {
 
     if(!this.img) {
       this.img = new Image();
-
+      var image = this.img;
       var self = this;
-      this.img.onload = function() {
-        if (!width || width <= 0) {
-          var h = self.img.height;
-          var w = self.img.width;
+      image.onload = function() {
+        var h = image.height;
+        var w = image.width;
+        self.model.orginWidth = w; // nerrow bar가 1이고 ratio가 3일때 넓이를 가지고 있는다.
 
-          var realWidth = w / h * height;
-          self.set('width', realWidth);
+        if (zpl && zpl.config && zpl.config.dpi > 0) {
+          // 1. 프린트에서 몇 인치로 찍힐지를 구한다.
+          // var zplWidth = w/zpl.config.dpi
+          // 2. 스크린에 몇 픽셀로 그릴지를 계산한다.
+          // w = zplWidth * 25.4 * self.app.PPM
+          
+          w /= 2
+        }
+
+        let unit = self.root.model_layer.model ? self.root.model_layer.model.unit : 1;
+        if (unit === 'mm' || unit === 'cm') {
+          w /= (self.app.PPM || 1)
+          h /= (self.app.PPM || 1)
+        }
+
+        self.set('width', w);
+
+        if(height <= 0) {
+          self.set('height', h);
         }
 
         self.invalidate();
@@ -61,7 +78,7 @@ export default class Barcode extends Rect {
       }
     }
 
-    if(!hidden){
+    if(!hidden) {
       try {
         ctx.drawImage(this.img, left, top, width, height);
       } catch(e) {
@@ -80,6 +97,17 @@ export default class Barcode extends Rect {
       }
       return true
     })
+  }
+
+  set(props, propval) {
+    var beforeText = this.get('text');
+    super.set(props, propval);
+    if ((props === 'text' && beforeText !== propval) 
+      || (props.text && props.text !== beforeText)) {
+      delete this.img
+    }
+
+    return this
   }
 
   drawText(context) {}

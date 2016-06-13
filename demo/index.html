@@ -13,18 +13,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>things-scene-barcode Demo</title>
-    <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../bower_components/things-zpl/things-zpl.js"></script>
 
-    <link rel="import" href="../../things-scene-viewer/things-scene-viewer.html">
-    <link rel="import" href="../../things-scene-viewer/things-scene-layer.html">
-    <link rel="import" href="../../things-scene-viewer/things-scene-handler.html">
+    <link rel="import" href="../bower_components/things-scene-viewer/things-scene-viewer.html">
+    <link rel="import" href="../bower_components/things-scene-viewer/things-scene-layer.html">
+    <link rel="import" href="../bower_components/things-scene-viewer/things-scene-handler.html">
 
-    <link rel="import" href="../../things-designer-elements/things-editor-color.html">
-    <link rel="import" href="../../things-designer-elements/things-editor-color-stops.html">
-    <link rel="import" href="../../things-designer-elements/things-editor-properties.html">
-    <link rel="import" href="../../things-scene-modeler/things-scene-properties.html">
+    <link rel="import" href="../bower_components/things-designer-elements/things-editor-color.html">
+    <link rel="import" href="../bower_components/things-designer-elements/things-editor-color-stops.html">
+    <link rel="import" href="../bower_components/things-designer-elements/things-editor-properties.html">
+    <link rel="import" href="../bower_components/things-scene-modeler/things-scene-properties.html">
 
     <link rel="import" href="./things-scene-barcode.html">
+
+    <link rel="import" href="./things-websocket.html">
 
     <style is="custom-style">
 
@@ -69,6 +72,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </things-scene-properties>
       </fieldset>
 
+      <button id="print" on-tap="onTapPrint">Print</button>
+
+      <things-websocket id="websocket" url="ws://192.168.35.72:9010/print/label">
+      </things-websocket>
     </template>
 
     <script>
@@ -80,7 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: 'text',
             top: 30,
             left: 30,
-            height: 30,
+            height: 80,
+            widthReset: true,
             textAlign: 'left',
             fontSize: '30',
             fontFamily: 'serif',
@@ -89,25 +97,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             type: 'barcode',
 
-            left: 200,
-            top: 110,
-            height: 200,
+            left: 30,
+            top: 30,
             symbol: "code39",
             text: "1234567890",
             alttext: "123",
             scale_h: 1,
             scale_w: 1,
-            rot: "N",
-            rotation: .1
+            height: 80,
+            widthReset: true,
+            rot: "N"
           }, {
             type: 'barcode',
             left: 100,
             top: 300,
-            height: 300,
             symbol: "qrcode",
             text: "http://www.hatiolab.com",
             scale_h: 1,
             scale_w: 1,
+            height: 80,
+            widthReset: true,
             rot: "N",
             fromZpl: true,
             rotation: Math.PI / 180 * 10,
@@ -116,21 +125,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: 'barcode',
             left: 100,
             top: 300,
-            height: 300,
             symbol: "qrcode",
             text: "http://www.hatiolab.com",
             scale_h: 1,
             scale_w: 1,
+            widthReset: true,
+            height: 80,
             rot: "N"
           }, {
             type: 'barcode',
             left: 100,
             top: 300,
-            height: 300,
             symbol: "qrcode",
             text: "http://www.hatiolab.com",
             scale_h: 1,
             scale_w: 1,
+            height: 80,
+            widthReset: true,
             rot: "N",
             rotation: Math.PI / 180 * 10
           }]
@@ -161,6 +172,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           label: 'Rotation(N,R,L,I)',
           name: 'rot'
         }]
+
+        app.onTapPrint = function(e) {
+          // 클라이언트에서 직접 Agent로 zpl을 보내는 경우.
+          console.log(app.model.components)
+          var components = JSON.parse(JSON.stringify(app.model.components))
+          this.command = zpl.revert(components)
+
+          var data = {
+            // 'print_name' : 'BIXOLON SLP-DX420',
+            'print_name' : 'BIXOLON_SLP_DX420',
+            'command' : this.command
+          }
+
+          app.$.websocket.fire('send', data);
+        }
 
       });
     </script>
