@@ -17,8 +17,7 @@ export default class Barcode extends Rect {
       height = 200,
       rot = 'N',
       rotation,
-      alpha = 1,
-      hidden = false
+      alpha = 1
     } = this.model
 
     var alttext = showText == 'N' ? ' ' : text; // alttext값은 bwip에 던져주는 텍스트
@@ -80,14 +79,12 @@ export default class Barcode extends Rect {
       }
     }
 
-    if(!hidden) {
-      try {
-        ctx.drawImage(this.img, left, top, width, height);
-      } catch(e) {
-        console.log(e)
-      }
-      ctx.stroke();
+    try {
+      ctx.drawImage(this.img, left, top, width, height);
+    } catch(e) {
+      console.log(e)
     }
+    ctx.stroke();
   }
 
   onchange(props) {
