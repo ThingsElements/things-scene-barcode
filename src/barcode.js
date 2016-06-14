@@ -55,8 +55,10 @@ export default class Barcode extends Rect {
 
         self.set('width', w);
 
-        if(height <= 0) {
-          self.set('height', h);
+        if (symbol === 'qrcode') {
+          self.set('height', w);
+        } else if(height <= 0) {
+          self.set('height', h/2);
         }
 
         self.invalidate();
@@ -97,17 +99,6 @@ export default class Barcode extends Rect {
       }
       return true
     })
-  }
-
-  set(props, propval) {
-    var beforeText = this.get('text');
-    super.set(props, propval);
-    if ((props === 'text' && beforeText !== propval) 
-      || (props.text && props.text !== beforeText)) {
-      delete this.img
-    }
-
-    return this
   }
 
   drawText(context) {}
