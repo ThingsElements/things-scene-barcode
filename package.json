@@ -1,6 +1,6 @@
 {
   "name": "things-scene-barcode",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "An element providing a starting point for your own reusable Polymer elements.",
   "main": "index.js",
   "directories": {
