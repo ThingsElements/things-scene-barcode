@@ -48,8 +48,8 @@ export default class Barcode extends Rect {
 
         let unit = self.root.model_layer.model ? self.root.model_layer.model.unit : 1;
         if (unit === 'mm' || unit === 'cm') {
-          w /= (self.app.PPM/self.scene.mmScale || 1)
-          h /= (self.app.PPM/self.scene.mmScale || 1)
+          w /= (self.app.PPM/self.app.mmScale || 1)
+          h /= (self.app.PPM/self.app.mmScale || 1)
         }
 
         self.set('width', w);
