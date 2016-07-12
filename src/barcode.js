@@ -37,7 +37,7 @@ export default class Barcode extends Rect {
         var w = image.width;
         self.model.orginWidth = w; // nerrow bar가 1이고 ratio가 3일때 넓이를 가지고 있는다.
 
-        if (zpl && zpl.config && zpl.config.dpi > 0) {
+        if (typeof(zpl) != 'undefined' && zpl.config && zpl.config.dpi > 0) {
           // 1. 프린트에서 몇 인치로 찍힐지를 구한다.
           // var zplWidth = w/zpl.config.dpi
           // 2. 스크린에 몇 픽셀로 그릴지를 계산한다.
@@ -48,8 +48,8 @@ export default class Barcode extends Rect {
 
         let unit = self.root.model_layer.model ? self.root.model_layer.model.unit : 1;
         if (unit === 'mm' || unit === 'cm') {
-          w /= (self.app.PPM/this.scene.mmScale || 1)
-          h /= (self.app.PPM/this.scene.mmScale || 1)
+          w /= (self.app.PPM/self.scene.mmScale || 1)
+          h /= (self.app.PPM/self.scene.mmScale || 1)
         }
 
         self.set('width', w);
