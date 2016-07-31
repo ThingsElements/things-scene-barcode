@@ -93,7 +93,7 @@ export default class Barcode extends Rect {
 
     return {
       left: old.left,
-      top: old.top,
+      top: bounds.top,
       width: old.width,
       height: bounds.height
     };
