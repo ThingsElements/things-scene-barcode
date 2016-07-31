@@ -42,7 +42,7 @@ export default class Barcode extends Rect {
           // var zplWidth = w/zpl.config.dpi
           // 2. 스크린에 몇 픽셀로 그릴지를 계산한다.
           // w = zplWidth * 25.4 * self.app.PPM
-          
+
           w /= 2
         }
 
@@ -85,6 +85,18 @@ export default class Barcode extends Rect {
       console.log(e)
     }
     ctx.stroke();
+  }
+
+  adjustResize(bounds, diagonal) {
+    /* Barcode의 경우는 외부로부터의 width의 변경을 지원하지 않는다. */
+    var old = this.bounds;
+
+    return {
+      left: old.left,
+      top: old.top,
+      width: old.width,
+      height: bounds.height
+    };
   }
 
   onchange(props) {
