@@ -115,4 +115,7 @@ export default class Barcode extends Rect {
   get controls() {}
 }
 
-Component.register('barcode', Barcode)
+Component.register('barcode', Barcode);
+
+/* Barcode를 scene을 통해서 export하기 위해서 .. */
+scene.Barcode = Barcode;
