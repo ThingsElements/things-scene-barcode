@@ -7,7 +7,6 @@ export default class Barcode extends Rect {
   _draw(ctx) {
     var {
       symbol,
-      text,
       showText,
       scale_h = 3,
       scale_w = 5,
@@ -20,6 +19,7 @@ export default class Barcode extends Rect {
       alpha = 1
     } = this.model
 
+    var text = this.text;
     var alttext = showText == 'N' ? ' ' : text; // alttext값은 bwip에 던져주는 텍스트
 
     if(rot != 'R' || rot !='I' || rot !='B')    // rot이 R, I, B 3개 값이 아니면 Defualt값 N
