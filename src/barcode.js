@@ -20,6 +20,13 @@ export default class Barcode extends Rect {
     } = this.model
 
     var text = this.text;
+
+    /* 바코드 텍스트가 변수에 의해서 변경될 수 있으므로 매번 이전 값고 비교한다. */
+    if(this.lastText != text) {
+      this.img = null;
+      this.lastText = text
+    }
+
     var alttext = showText == 'N' ? ' ' : text; // alttext값은 bwip에 던져주는 텍스트
 
     if(rot != 'R' || rot !='I' || rot !='B')    // rot이 R, I, B 3개 값이 아니면 Defualt값 N
