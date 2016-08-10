@@ -36,11 +36,13 @@ export default class Barcode extends Rect {
     ctx.globalAlpha = alpha;
 
     if(!this.img) {
+
       this.img = new Image();
       var image = this.img;
       var self = this;
 
       image.onload = function() {
+
         var h = image.height;
         var w = image.width;
 
@@ -56,6 +58,7 @@ export default class Barcode extends Rect {
       };
 
       if (!this.img.src) {
+
         try {
           this.img.src = bwip.imageUrl({
             symbol,
@@ -72,10 +75,12 @@ export default class Barcode extends Rect {
     }
 
     try {
-      ctx.drawImage(this.img, left, top, width, height);
+      if(this.img)
+        ctx.drawImage(this.img, left, top, width, height);
     } catch(e) {
       console.log(e)
     }
+
     ctx.stroke();
   }
 
