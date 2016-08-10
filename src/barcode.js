@@ -41,6 +41,14 @@ export default class Barcode extends Rect {
       var self = this;
 
       image.onload = function() {
+        var h = image.height;
+        var w = image.width;
+
+        self.set('width', w);
+
+        if (symbol === 'qrcode') {
+          self.set('height', w);
+        }
 
         self.invalidate();
       };
