@@ -39,33 +39,8 @@ export default class Barcode extends Rect {
       this.img = new Image();
       var image = this.img;
       var self = this;
+
       image.onload = function() {
-        var h = image.height;
-        var w = image.width;
-        self.model.orginWidth = w; // nerrow bar가 1이고 ratio가 3일때 넓이를 가지고 있는다.
-
-        if (typeof(zpl) != 'undefined' && zpl.config && zpl.config.dpi > 0) {
-          // 1. 프린트에서 몇 인치로 찍힐지를 구한다.
-          // var zplWidth = w/zpl.config.dpi
-          // 2. 스크린에 몇 픽셀로 그릴지를 계산한다.
-          // w = zplWidth * 25.4 * self.app.PPM
-
-          w /= 2
-        }
-
-        let unit = self.root.model_layer.model ? self.root.model_layer.model.unit : 1;
-        if (unit === 'mm' || unit === 'cm') {
-          w /= (self.app.PPM/self.app.mmScale || 1)
-          h /= (self.app.PPM/self.app.mmScale || 1)
-        }
-
-        self.set('width', w);
-
-        if (symbol === 'qrcode') {
-          self.set('height', w);
-        } else if(height <= 0) {
-          self.set('height', h/2);
-        }
 
         self.invalidate();
       };
