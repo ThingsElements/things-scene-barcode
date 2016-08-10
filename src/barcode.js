@@ -48,6 +48,8 @@ export default class Barcode extends Rect {
 
         if (symbol === 'qrcode') {
           self.set('height', w);
+        } else if(height <= 0) {
+          self.set('height', h);
         }
 
         self.invalidate();
