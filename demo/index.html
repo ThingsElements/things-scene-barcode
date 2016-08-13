@@ -14,11 +14,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <title>things-scene-barcode Demo</title>
     <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
-    <script src="../bower_components/things-zpl/things-zpl.js"></script>
 
     <link rel="import" href="../bower_components/things-scene-viewer/things-scene-viewer.html">
     <link rel="import" href="../bower_components/things-scene-viewer/things-scene-layer.html">
     <link rel="import" href="../bower_components/things-scene-viewer/things-scene-handler.html">
+
+    <link rel="import" href="../bower_components/things-label-zpl/things-label-zpl.html">
 
     <link rel="import" href="../bower_components/things-designer-elements/things-editor-color.html">
     <link rel="import" href="../bower_components/things-designer-elements/things-editor-color-stops.html">
@@ -88,7 +89,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             top: 30,
             left: 30,
             height: 80,
-            widthReset: true,
             textAlign: 'left',
             fontSize: '30',
             fontFamily: 'serif',
@@ -103,10 +103,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             text: "1234567890",
             alttext: "123",
             scale_h: 1,
-            scale_w: 1,
+            scale_w: 2,
+            height: 10
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 2,
             height: 80,
-            widthReset: true,
-            rot: "N"
+            square: true,
+            rotation: Math.PI / 180 * 10
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            square: true,
+            height: 80
           }, {
             type: 'barcode',
             left: 100,
@@ -116,33 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             scale_h: 1,
             scale_w: 1,
             height: 80,
-            widthReset: true,
-            rot: "N",
-            fromZpl: true,
-            rotation: Math.PI / 180 * 10,
-            centerRotate: false
-          }, {
-            type: 'barcode',
-            left: 100,
-            top: 300,
-            symbol: "qrcode",
-            text: "http://www.hatiolab.com",
-            scale_h: 1,
-            scale_w: 1,
-            widthReset: true,
-            height: 80,
-            rot: "N"
-          }, {
-            type: 'barcode',
-            left: 100,
-            top: 300,
-            symbol: "qrcode",
-            text: "http://www.hatiolab.com",
-            scale_h: 1,
-            scale_w: 1,
-            height: 80,
-            widthReset: true,
-            rot: "N",
+            square: true,
             rotation: Math.PI / 180 * 10
           }]
         };
@@ -161,31 +154,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           name: 'showText'
         }, {
           type: 'number',
-          label: 'Scale-H',
-          name: 'scale_h'
+          label: 'Scale-W',
+          name: 'scale_w'
         }, {
           type: 'number',
-          label: 'Scale-V',
-          name: 'Scale-V'
-        }, {
-          type: 'string',
-          label: 'Rotation(N,R,L,I)',
-          name: 'rot'
+          label: 'Scale-H',
+          name: 'scale_h'
         }]
 
         app.onTapPrint = function(e) {
           // 클라이언트에서 직접 Agent로 zpl을 보내는 경우.
-          console.log(app.model.components)
-          var components = JSON.parse(JSON.stringify(app.model.components))
-          this.command = zpl.revert(components)
+          app.scene.toZpl().then(function(result) {
+            console.log(result);
+            // app.$.websocket.fire('send', result);
 
-          var data = {
-            // 'print_name' : 'BIXOLON SLP-DX420',
-            'print_name' : 'BIXOLON_SLP_DX420',
-            'command' : this.command
-          }
+          }, function(error) {
+            console.error(error);
+          })
 
-          app.$.websocket.fire('send', data);
         }
 
       });

@@ -13,8 +13,8 @@ export default class Barcode extends Rect {
       left = 0,
       top = 0,
       width = 0,
-      height = 200,
-      rot = 'N',
+      height = 10,
+      square = false,
       rotation,
       alpha = 1
     } = this.model
@@ -29,9 +29,6 @@ export default class Barcode extends Rect {
 
     var alttext = showText == 'N' ? ' ' : text; // alttext값은 bwip에 던져주는 텍스트
 
-    if(rot != 'R' || rot !='I' || rot !='B')    // rot이 R, I, B 3개 값이 아니면 Defualt값 N
-      rot = 'N';
-
     ctx.beginPath();
     ctx.globalAlpha = alpha;
 
@@ -42,23 +39,22 @@ export default class Barcode extends Rect {
       var self = this;
 
       image.onload = function() {
+        self.width_per_scale = image.width / scale_w;
 
-        var h = image.height;
-        var w = image.width;
-
-        self.set('width', w);
-
-        if (symbol === 'qrcode') {
-          self.set('height', w);
-        } else if(height <= 0) {
-          self.set('height', h);
+        if(square) {
+          self.height_per_scale = image.height / scale_h;
+          self.set({
+            width: image.width,
+            height: image.height
+          });
+        } else {
+          self.set('width', image.width);
         }
 
         self.invalidate();
       };
 
       if (!this.img.src) {
-
         try {
           this.img.src = bwip.imageUrl({
             symbol,
@@ -66,7 +62,7 @@ export default class Barcode extends Rect {
             alttext,
             scale_h,
             scale_w,
-            rotation: rot, // rotation 속성 이름 충돌되므로 rot로 변경함.
+            rotation: 'N'
           })
         } catch(e) {
           console.log(e)
@@ -77,6 +73,7 @@ export default class Barcode extends Rect {
     try {
       if(this.img)
         ctx.drawImage(this.img, left, top, width, height);
+
     } catch(e) {
       console.log(e)
     }
@@ -84,16 +81,74 @@ export default class Barcode extends Rect {
     ctx.stroke();
   }
 
-  adjustResize(bounds, diagonal) {
-    /* Barcode의 경우는 외부로부터의 width의 변경을 지원하지 않는다. */
-    var old = this.bounds;
+  adjustResize(bounds, origin_bounds, diagonal) {
+    /* 바코드는 diagonal 옵션을 무시한다. */
+
+    if(!this.width_per_scale)
+      return origin_bounds;
+
+    var square = !!this.get('square');
+
+    var left = origin_bounds.left;
+    var width = origin_bounds.width;
+    var top = square ? origin_bounds.top : bounds.top;
+    var height = square ? origin_bounds.height : bounds.height;
+
+    var old_scale_w = this.get('scale_w');
+    var new_scale_w = Math.max(Math.floor(bounds.width / this.width_per_scale), 1);
+
+    if(square) {
+      // 폭과 높이가 같은 크기를 유지해야하는 square 타입의 경우에는,
+      // 폭과 높이 방향 중 어느 방향으로 크게 움직였는지를 기준으로 scale 값을 결정한다.
+
+      var old_scale_h = this.get('scale_h');
+      var new_scale_h = Math.max(Math.floor(bounds.height / this.height_per_scale), 1);
+
+      var scale = Math.abs(origin_bounds.width - bounds.width) > Math.abs(origin_bounds.height - bounds.height) ?
+        new_scale_w : new_scale_h;
+
+      // top 바운드가 움직였다면, ..
+      if(Math.abs(bounds.top - top) >= 10)
+        top -= scale * this.height_per_scale - origin_bounds.height;
+
+      // left 바운드가 움직였다면, ..
+      if(Math.abs(bounds.left - left) >= 10)
+        left -= scale * this.width_per_scale - origin_bounds.width;
+
+      width += scale * this.width_per_scale - origin_bounds.width;
+      height += scale * this.height_per_scale - origin_bounds.height;
+
+      if(old_scale_w !== scale || old_scale_h !== scale) {
+
+        this.set({
+          scale_w: scale,
+          scale_h: scale
+        });
+
+        delete this.img;
+      }
+
+    } else {
+
+      // left 바운드가 움직였다면, ..
+      if(Math.abs(bounds.left - left) >= 10)
+        left -= new_scale_w * this.width_per_scale - origin_bounds.width;
+
+      width += new_scale_w * this.width_per_scale - origin_bounds.width;
+
+      if(old_scale_w !== new_scale_w) {
+
+        this.set('scale_w', new_scale_w);
+        delete this.img;
+      }
+    }
 
     return {
-      left: old.left,
-      top: bounds.top,
-      width: old.width,
-      height: bounds.height
-    };
+      left,
+      top,
+      width,
+      height
+    }
   }
 
   onchange(props) {
