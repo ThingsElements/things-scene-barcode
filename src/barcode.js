@@ -110,7 +110,7 @@ export default class Barcode extends Rect {
             symbol,
             text,
             alttext : (showText == 'N') ? ' ' : '',
-            scale_h,
+            scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
             scale_w,
             rotation: 'N'
           })
