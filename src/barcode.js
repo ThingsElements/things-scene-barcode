@@ -21,7 +21,7 @@ const BARCODE_REGEXP = {
     'B': /^[\040-\177]*$/,
     'C': /^(([0-9]{2})+?)*$/
   },
-  'datamatrix': /^[\x00-\xff]*$/,
+  'datamatrix': /^[\x00-\xff]*$/, // 멀티바이트 캐릭터는 안됨 ?
   'ean8': /^\d{1,}$/,
   'ean13': /^\d{1,}$/,
   'industrial2of5': /^\d{1,}$/,
