@@ -39,17 +39,6 @@ const BARCODE_REGEXP = {
   'upce': /^\d{1,}$/
 };
 
-const VALIDATORS = {
-  '': (text) => {
-
-  }, // function validator
-  'code39': (text) => {
-    return (text.match(/[^-0-9A-Z.$/+% ]/g) ||[]).reduce((sum, x) => {
-      return sum.replace(x, ' ');
-    }, text);
-  }
-};
-
 export default class Barcode extends Rect {
 
   _draw(ctx) {
@@ -129,17 +118,6 @@ export default class Barcode extends Rect {
     }
 
     ctx.stroke();
-  }
-
-  get text() {
-    var type = this.get('type');
-    var text = super.text;
-
-    var validator = VALIDATORS[type];
-    if(!validator)
-      return text;
-
-    return validator(text);
   }
 
   adjustResize(bounds, origin_bounds, diagonal) {
