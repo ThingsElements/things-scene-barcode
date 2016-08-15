@@ -1,6 +1,54 @@
 var { Component, Rect } = scene
 
-const REDRAW_PROPS = ['symbol', 'text', 'alttext', 'scale_h', 'scale_w', 'rot', 'showText']
+const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
+
+// 참고 웹페이지.
+// http://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
+const BARCODE_REGEXP = {
+  'code11': /^[0-9\-]*$/,
+  'codebar': /^[A-D][0-9\+$:\-/.]*[A-D]$/,
+  'code39': {
+    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+    'extended': /^[\000-\177]*$/
+  },
+  'code93': {
+    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+    'extended': /^[\000-\177]*$/
+  },
+  'code128': {
+    'auto': /^[\000-\177]*$/,
+    'A': /^[\000-\137]*$/,
+    'B': /^[\040-\177]*$/,
+    'C': /^(([0-9]{2})+?)*$/
+  },
+  'datamatrix': /^[\x00-\xff]*$/,
+  'ean8': /^\d{1,}$/,
+  'ean13': /^\d{1,}$/,
+  'industrial2of5': /^\d{1,}$/,
+  'interleaved2of5': /^\d{1,}$/,
+  'isbn': /^\d{9}[\d|X]$/,
+  'msi': /^\d{1,}$/,
+  'pdf417': {
+    'text-compaction': /^[\011\012\015\040-\177]*$/,
+    'binary-compaction': /^[\x00-\xff]*$/
+  },
+  'planet': /^\d{1,}$/,
+  'postnet': /^\d{1,}$/,
+  'ean128': /^[\000-\177\xC8\xCA-\xCD]*$/,
+  'upca': /^\d{1,}$/,
+  'upce': /^\d{1,}$/
+};
+
+const VALIDATORS = {
+  '': (text) => {
+
+  }, // function validator
+  'code39': (text) => {
+    return (text.match(/[^-0-9A-Z.$/+% ]/g) ||[]).reduce((sum, x) => {
+      return sum.replace(x, ' ');
+    }, text);
+  }
+};
 
 export default class Barcode extends Rect {
 
@@ -26,8 +74,6 @@ export default class Barcode extends Rect {
       this.img = null;
       this.lastText = text
     }
-
-    var alttext = showText == 'N' ? ' ' : text; // alttext값은 bwip에 던져주는 텍스트
 
     ctx.beginPath();
     ctx.globalAlpha = alpha;
@@ -55,11 +101,15 @@ export default class Barcode extends Rect {
       };
 
       if (!this.img.src) {
+        let regex = BARCODE_REGEXP[symbol];
+        if(regex instanceof RegExp && !text.match(regex))
+          console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
+
         try {
           this.img.src = bwip.imageUrl({
             symbol,
             text,
-            alttext,
+            alttext : (showText == 'N') ? ' ' : '',
             scale_h,
             scale_w,
             rotation: 'N'
@@ -79,6 +129,17 @@ export default class Barcode extends Rect {
     }
 
     ctx.stroke();
+  }
+
+  get text() {
+    var type = this.get('type');
+    var text = super.text;
+
+    var validator = VALIDATORS[type];
+    if(!validator)
+      return text;
+
+    return validator(text);
   }
 
   adjustResize(bounds, origin_bounds, diagonal) {
