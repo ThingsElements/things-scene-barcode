@@ -43,86 +43,108 @@ export default class Barcode extends Rect {
 
   _draw(ctx) {
     var {
-      symbol,
-      showText,
-      scale_h = 3,
-      scale_w = 5,
       left = 0,
       top = 0,
       width = 0,
       height = 10,
-      square = false,
-      rotation,
       alpha = 1
     } = this.model
 
     var text = this.text;
 
-    /* 바코드 텍스트가 변수에 의해서 변경될 수 있으므로 매번 이전 값고 비교한다. */
-    if(this.lastText != text) {
-      this.img = null;
-      this.lastText = text
-    }
+    /* 바코드 텍스트가 변수에 의해서 변경될 수 있으므로 매번 이전 값과 비교한다. */
+    this.prepareIf(text && (!this.image || this.text != text));
+
+    this.lastText = text;
 
     ctx.beginPath();
     ctx.globalAlpha = alpha;
 
-    if(!this.img) {
-
-      this.img = new Image();
-      var image = this.img;
-      var self = this;
-
-      image.onload = function() {
-        self.width_per_scale = image.width / scale_w;
-
-        if(square) {
-          self.height_per_scale = image.height / scale_h;
-          self.set({
-            width: image.width,
-            height: image.height
-          });
-        } else {
-          self.set('width', image.width);
-        }
-
-        self.invalidate();
-      };
-
-      if (!this.img.src) {
-        let regex = BARCODE_REGEXP[symbol];
-        if(regex instanceof RegExp && !text.match(regex))
-          console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
-
-        try {
-          this.img.src = bwip.imageUrl({
-            symbol,
-            text,
-            alttext : (showText == 'N') ? ' ' : '',
-            scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
-            scale_w,
-            rotation: 'N'
-          })
-        } catch(e) {
-          console.log(e)
-        }
-      }
-    }
-
     try {
-      if(this.img)
-        ctx.drawImage(this.img, left, top, width, height);
+      if(this.image)
+        ctx.drawImage(this.image, left, top, width, height);
 
     } catch(e) {
       console.log(e)
     }
+  }
 
-    ctx.stroke();
+  prepare(resolve, reject) {
+    var text = this.text;
+
+    // 1. 먼저 만족하지 않는 조건인 경우에, 바로 리턴한다.
+    if(!text) {
+      resolve(this);
+      return;
+    }
+
+    // 2. 재진입되지 않는 조건을 먼저 설정한다. (주로 핵심적인 멤버변수를 생성한다.)
+    //    prepareIf(cond) 의 조건으로 핵심 멤버변수가 설정되지 않은 경우로 로직을 만들 수 있도록 한다.
+    this.image = new Image();
+
+    // 3. 비동기 콜백에 대한 핸들링
+    var self = this;
+    var image = this.image;
+    var {
+      showText,
+      scale_h = 3,
+      scale_w = 5,
+      square = false,
+      symbol
+    } = this.model;
+
+    this.image.onload = function() {
+      self.width_per_scale = image.width / scale_w;
+
+      if(square) {
+        self.height_per_scale = image.height / scale_h;
+        self.set({
+          width: image.width,
+          height: image.height
+        });
+      } else {
+        self.set('width', image.width);
+      }
+
+      resolve(this);
+    }
+
+    this.image.onerror = function(error) {
+      reject(error);
+    }
+
+    // 4. 비동기 상황을 트리거링
+    let regex = BARCODE_REGEXP[symbol];
+    if(regex instanceof RegExp && !text.match(regex))
+      console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
+
+    try {
+      this.image.src = bwip.imageUrl({
+        symbol,
+        text,
+        alttext : (showText == 'N') ? ' ' : '',
+        scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
+        scale_w,
+        rotation: 'N'
+      })
+    } catch(e) {
+      console.log(e)
+    }
+  }
+
+  onchange(props) {
+
+    REDRAW_PROPS.every(prop => {
+      if(props.hasOwnProperty(prop)) {
+        delete this.image;
+        return false;
+      }
+      return true;
+    })
   }
 
   adjustResize(bounds, origin_bounds, diagonal) {
     /* 바코드는 diagonal 옵션을 무시한다. */
-
     if(!this.width_per_scale)
       return origin_bounds;
 
@@ -164,7 +186,7 @@ export default class Barcode extends Rect {
           scale_h: scale
         });
 
-        delete this.img;
+        delete this.image;
       }
 
     } else {
@@ -178,7 +200,7 @@ export default class Barcode extends Rect {
       if(old_scale_w !== new_scale_w) {
 
         this.set('scale_w', new_scale_w);
-        delete this.img;
+        delete this.image;
       }
     }
 
@@ -188,17 +210,6 @@ export default class Barcode extends Rect {
       width,
       height
     }
-  }
-
-  onchange(props) {
-
-    REDRAW_PROPS.every(prop => {
-      if(props.hasOwnProperty(prop)) {
-        delete this.img
-        return false
-      }
-      return true
-    })
   }
 
   drawText(context) {}
