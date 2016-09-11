@@ -49,7 +49,6 @@ export default class Barcode extends Rect {
       height = 10,
       alpha = 1
     } = this.model
-
     var text = this.text;
 
     /* 바코드 텍스트가 변수에 의해서 변경될 수 있으므로 매번 이전 값과 비교한다. */
@@ -86,7 +85,7 @@ export default class Barcode extends Rect {
     var self = this;
     var image = this.image;
     var {
-      showText,
+      showText = true,
       scale_h = 3,
       scale_w = 5,
       square = false,
@@ -122,7 +121,7 @@ export default class Barcode extends Rect {
       this.image.src = bwip.imageUrl({
         symbol,
         text,
-        alttext : (showText == 'N') ? ' ' : '',
+        alttext : showText ? '' : ' ',
         scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
         scale_w,
         rotation: 'N'
