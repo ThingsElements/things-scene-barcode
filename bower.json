@@ -1,6 +1,6 @@
 {
   "name": "things-scene-barcode",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "authors": [
     "Hatio Lab. <heartyoh@hatiolab.com>"
   ],
@@ -27,7 +27,6 @@
     "web-component-tester": "^4.0.0",
     "things-scene-viewer": "ThingsElements/things-scene-viewer",
     "things-scene-modeler": "ThingsElements/things-scene-modeler",
-    "things-designer-elements": "ThingsElements/things-designer-elements",
-    "things-label-zpl": "ThingsElements/things-label-zpl"
+    "things-designer-elements": "ThingsElements/things-designer-elements"
   }
 }
