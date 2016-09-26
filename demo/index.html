@@ -26,8 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <link rel="import" href="./things-scene-barcode.html">
 
-    <link rel="import" href="./things-websocket.html">
-
     <style is="custom-style">
 
     @font-face {
@@ -73,8 +71,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       <button id="print" on-tap="onTapPrint">Print</button>
 
-      <things-websocket id="websocket" url="ws://192.168.35.72:9010/print/label">
-      </things-websocket>
     </template>
 
     <script>
@@ -175,7 +171,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           // 클라이언트에서 직접 Agent로 zpl을 보내는 경우.
           app.scene.toZpl().then(function(result) {
             console.log(result);
-            // app.$.websocket.fire('send', result);
 
           }, function(error) {
             console.error(error);
