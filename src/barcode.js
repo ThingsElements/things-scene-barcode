@@ -1,4 +1,4 @@
-var { Component, Rect } = scene
+var { Component, RectPath } = scene
 
 const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
 
@@ -39,7 +39,7 @@ const BARCODE_REGEXP = {
   'upce': /^\d{1,}$/
 };
 
-export default class Barcode extends Rect {
+export default class Barcode extends RectPath(Component) {
 
   _draw(ctx) {
     var {

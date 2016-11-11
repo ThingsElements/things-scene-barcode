@@ -69,8 +69,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </things-scene-properties>
       </fieldset>
 
-      <button id="print" on-tap="onTapPrint">Print</button>
-
     </template>
 
     <script>
@@ -166,17 +164,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           label: 'Scale-H',
           name: 'scale_h'
         }]
-
-        app.onTapPrint = function(e) {
-          // 클라이언트에서 직접 Agent로 zpl을 보내는 경우.
-          app.scene.toZpl().then(function(result) {
-            console.log(result);
-
-          }, function(error) {
-            console.error(error);
-          })
-
-        }
 
       });
     </script>
