@@ -269,15 +269,15 @@ export default class Barcode extends RectPath(Component) {
   	bw.scale(scale_w, scale_h);
 
   	// Add optional padding to the image
-  	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
-  					+opts.paddingheight*scale_h || 0);
+  	// bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
+  	// 				+opts.paddingheight*scale_h || 0);
 
-    if(!BWIPJS.cvs) {
-      BWIPJS.cvs = document.createElement('canvas');
-      BWIPJS.cvs.style.display = 'none';
-      BWIPJS.cvs.height = 1;
-    	BWIPJS.cvs.width  = 1;
-      document.body.appendChild(BWIPJS.cvs);
+    if(!Barcode.canvas) {
+      Barcode.canvas = document.createElement('canvas');
+      Barcode.canvas.style.display = 'none';
+      Barcode.canvas.height = 1;
+    	Barcode.canvas.width  = 1;
+      document.body.appendChild(Barcode.canvas);
     }
 
     try {
@@ -287,10 +287,10 @@ export default class Barcode extends RectPath(Component) {
       console.error(e);
 
       var bm = bw.bitmap();
-      return bm.error(BWIPJS.cvs, rot || 'N');
+      return bm.error(Barcode.canvas, rot || 'N');
     }
 
-    return bw.bitmap().show(BWIPJS.cvs, rot || 'N');
+    return bw.bitmap().show(Barcode.canvas, rot || 'N');
   }
 }
 
