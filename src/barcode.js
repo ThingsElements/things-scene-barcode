@@ -1,4 +1,5 @@
 var { Component, RectPath } = scene
+import Bitmap from './bitmap'
 
 const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
 
@@ -26,7 +27,7 @@ const BARCODE_REGEXP = {
   'ean13': /^\d{1,}$/,
   'industrial2of5': /^\d{1,}$/,
   'interleaved2of5': /^\d{1,}$/,
-  'isbn': /^\d{9}[\d|X]$/,
+  'isbn': /((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/,
   'msi': /^\d{1,}$/,
   'pdf417': {
     'text-compaction': /^[\011\012\015\040-\177]*$/,
@@ -118,14 +119,7 @@ export default class Barcode extends RectPath(Component) {
       console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
 
     try {
-      this.image.src = bwip.imageUrl({
-        symbol,
-        text,
-        alttext : showText ? '' : ' ',
-        scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
-        scale_w,
-        rotation: 'N'
-      })
+      this.image.src = this.imageUrl()
     } catch(e) {
       console.log(e)
     }
@@ -214,6 +208,89 @@ export default class Barcode extends RectPath(Component) {
   drawText(context) {}
 
   get controls() {}
+
+  imageUrl() {
+
+    var {
+      symbol,
+      text,
+      alttext,
+      scale_h,
+      scale_w,
+      rotation = 'N'
+    } = this.model
+
+    var optstr = symdesc[symbol].opts;
+
+  	// Convert the options to a dictionary object, so we can pass alttext with
+  	// spaces.
+  	var tmp = optstr.split(' ');
+  	var opts = {};
+  	for (var i = 0; i < tmp.length; i++) {
+  		if (!tmp[i]) {
+  			continue;
+  		}
+  		var eq = tmp[i].indexOf('=');
+  		if (eq == -1) {
+  			opts[tmp[i]] = true;
+  		} else {
+  			opts[tmp[i].substr(0, eq)] = tmp[i].substr(eq+1);
+  		}
+  	}
+
+  	// Add the alternate text
+  	if (alttext) {
+  		opts.alttext = alttext;
+  		opts.includetext = true;
+  	}
+  	// We use mm rather than inches for height - except pharmacode2 height
+  	// which is expected to be in mm
+  	// if (height && symbol != 'pharmacode2') {
+  	// 	opts.height = height / 25.4 || 0.5;
+  	// }
+  	// Likewise, width.
+  	// if (width) {
+  	// 	opts.width = width / 25.4 || 0;
+  	// }
+
+    var bw = new BWIPJS(Module, true);
+
+  	// BWIPP does not extend the background color into the
+  	// human readable text.  Fix that in the bitmap interface.
+  	if (opts.backgroundcolor) {
+  		bw.bitmap(new Bitmap(opts.backgroundcolor));
+  		delete opts.backgroundcolor;
+  	} else {
+  		bw.bitmap(new Bitmap);
+  	}
+
+  	// Set the scaling factors
+  	bw.scale(scale_w, scale_h);
+
+  	// Add optional padding to the image
+  	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
+  					+opts.paddingheight*scale_h || 0);
+
+    if(!BWIPJS.cvs) {
+      BWIPJS.cvs = document.createElement('canvas');
+      BWIPJS.cvs.style.display = 'none';
+      BWIPJS.cvs.height = 1;
+    	BWIPJS.cvs.width  = 1;
+      document.body.appendChild(BWIPJS.cvs);
+    }
+
+    try {
+      BWIPP()(bw, symbol, text, opts);
+    } catch(e) {
+      // TODO 오류처리.
+      console.error(e);
+
+      var bm = bw.bitmap();
+      return bm.error(BWIPJS.cvs, rotation);
+    }
+
+    return bw.bitmap().show(BWIPJS.cvs, rotation);
+  }
 }
 
 Component.register('barcode', Barcode);
