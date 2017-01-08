@@ -214,11 +214,12 @@ export default class Barcode extends RectPath(Component) {
     var {
       symbol,
       text,
-      alttext,
-      scale_h,
-      scale_w,
-      rot
+      showText,
+      scale_w
     } = this.model
+
+    var alttext = showText ? '' : ' ';
+    var scale_h = scale_w;
 
     var optstr = symdesc[symbol].opts;
 
@@ -269,8 +270,8 @@ export default class Barcode extends RectPath(Component) {
   	bw.scale(scale_w, scale_h);
 
   	// Add optional padding to the image
-  	// bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
-  	// 				+opts.paddingheight*scale_h || 0);
+  	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
+  					+opts.paddingheight*scale_h || 0);
 
     if(!Barcode.canvas) {
       Barcode.canvas = document.createElement('canvas');
@@ -287,10 +288,10 @@ export default class Barcode extends RectPath(Component) {
       console.error(e);
 
       var bm = bw.bitmap();
-      return bm.error(Barcode.canvas, rot || 'N');
+      return bm.error(Barcode.canvas, 'N');
     }
 
-    return bw.bitmap().show(Barcode.canvas, rot || 'N');
+    return bw.bitmap().show(Barcode.canvas, 'N');
   }
 }
 
