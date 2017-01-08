@@ -217,7 +217,7 @@ export default class Barcode extends RectPath(Component) {
       alttext,
       scale_h,
       scale_w,
-      rotation = 'N'
+      rot
     } = this.model
 
     var optstr = symdesc[symbol].opts;
@@ -253,7 +253,8 @@ export default class Barcode extends RectPath(Component) {
   	// 	opts.width = width / 25.4 || 0;
   	// }
 
-    var bw = new BWIPJS(Module, true);
+    var bw = new BWIPJS(Module, 1); // for monichrome
+    // var bw = new BWIPJS(Module, 0); // for Anti-aliased
 
   	// BWIPP does not extend the background color into the
   	// human readable text.  Fix that in the bitmap interface.
@@ -286,10 +287,10 @@ export default class Barcode extends RectPath(Component) {
       console.error(e);
 
       var bm = bw.bitmap();
-      return bm.error(BWIPJS.cvs, rotation);
+      return bm.error(BWIPJS.cvs, rot || 'N');
     }
 
-    return bw.bitmap().show(BWIPJS.cvs, rotation);
+    return bw.bitmap().show(BWIPJS.cvs, rot || 'N');
   }
 }
 
