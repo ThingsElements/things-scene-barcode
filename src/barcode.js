@@ -5,40 +5,40 @@ const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText']
 
 // 참고 웹페이지.
 // http://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
-const BARCODE_REGEXP = {
-  'code11': /^[0-9\-]*$/,
-  'codebar': /^[A-D][0-9\+$:\-/.]*[A-D]$/,
-  'code39': {
-    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
-    'extended': /^[\000-\177]*$/
-  },
-  'code93': {
-    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
-    'extended': /^[\000-\177]*$/
-  },
-  'code128': {
-    'auto': /^[\000-\177]*$/,
-    'A': /^[\000-\137]*$/,
-    'B': /^[\040-\177]*$/,
-    'C': /^(([0-9]{2})+?)*$/
-  },
-  'datamatrix': /^[\x00-\xff]*$/, // 멀티바이트 캐릭터는 안됨 ?
-  'ean8': /^\d{1,}$/,
-  'ean13': /^\d{1,}$/,
-  'industrial2of5': /^\d{1,}$/,
-  'interleaved2of5': /^\d{1,}$/,
-  'isbn': /((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/,
-  'msi': /^\d{1,}$/,
-  'pdf417': {
-    'text-compaction': /^[\011\012\015\040-\177]*$/,
-    'binary-compaction': /^[\x00-\xff]*$/
-  },
-  'planet': /^\d{1,}$/,
-  'postnet': /^\d{1,}$/,
-  'ean128': /^[\000-\177\xC8\xCA-\xCD]*$/,
-  'upca': /^\d{1,}$/,
-  'upce': /^\d{1,}$/
-};
+// const BARCODE_REGEXP = {
+//   'code11': /^[0-9\-]*$/,
+//   'codebar': /^[A-D][0-9\+$:\-/.]*[A-D]$/,
+//   'code39': {
+//     'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+//     'extended': /^[\000-\177]*$/
+//   },
+//   'code93': {
+//     'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+//     'extended': /^[\000-\177]*$/
+//   },
+//   'code128': {
+//     'auto': /^[\000-\177]*$/,
+//     'A': /^[\000-\137]*$/,
+//     'B': /^[\040-\177]*$/,
+//     'C': /^(([0-9]{2})+?)*$/
+//   },
+//   'datamatrix': /^[\x00-\xff]*$/, // 멀티바이트 캐릭터는 안됨 ?
+//   'ean8': /^\d{1,}$/,
+//   'ean13': /^\d{1,}$/,
+//   'industrial2of5': /^\d{1,}$/,
+//   'interleaved2of5': /^\d{1,}$/,
+//   'isbn': /((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/,
+//   'msi': /^\d{1,}$/,
+//   'pdf417': {
+//     'text-compaction': /^[\011\012\015\040-\177]*$/,
+//     'binary-compaction': /^[\x00-\xff]*$/
+//   },
+//   'planet': /^\d{1,}$/,
+//   'postnet': /^\d{1,}$/,
+//   'ean128': /^[\000-\177\xC8\xCA-\xCD]*$/,
+//   'upca': /^\d{1,}$/,
+//   'upce': /^\d{1,}$/
+// };
 
 export default class Barcode extends RectPath(Component) {
 
@@ -114,9 +114,9 @@ export default class Barcode extends RectPath(Component) {
     }
 
     // 4. 비동기 상황을 트리거링
-    let regex = BARCODE_REGEXP[symbol];
-    if(regex instanceof RegExp && !text.match(regex))
-      console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
+    // let regex = BARCODE_REGEXP[symbol];
+    // if(regex instanceof RegExp && !text.match(regex))
+    //   console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
 
     try {
       this.image.src = this.imageUrl()
