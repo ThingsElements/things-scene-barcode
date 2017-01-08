@@ -213,11 +213,11 @@ export default class Barcode extends RectPath(Component) {
 
     var {
       symbol,
-      text,
       showText,
       scale_w
     } = this.model
 
+    var text = this.text;
     var alttext = showText ? '' : ' ';
     var scale_h = scale_w;
 
