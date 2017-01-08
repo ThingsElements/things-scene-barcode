@@ -149,6 +149,8 @@ export default function Bitmap(bgcolor) {
 		}
 		ctx.putImageData(id, padx, pady);
 
+    console.log('data-url', cvs.toDataURL())
+
 		return cvs.toDataURL();
 	}
 }
