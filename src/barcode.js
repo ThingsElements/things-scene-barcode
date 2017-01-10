@@ -3,6 +3,10 @@ import Bitmap from './bitmap'
 
 const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
 
+symdesc['code39'].opts = "includetext includecheckintext"
+symdesc["ean13"].opts = "includetext paddingwidth=-5"
+symdesc["ean8"].opts = "includetext"
+
 // 참고 웹페이지.
 // http://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
 // const BARCODE_REGEXP = {
@@ -243,7 +247,7 @@ export default class Barcode extends RectPath(Component) {
   	if (alttext) {
   		opts.alttext = alttext;
   		opts.includetext = true;
-  	}
+    }
   	// We use mm rather than inches for height - except pharmacode2 height
   	// which is expected to be in mm
   	// if (height && symbol != 'pharmacode2') {
