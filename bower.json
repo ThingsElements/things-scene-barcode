@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "things-scene": "^0.7.0",
-    "bwip": "^0.7.1"
+    "bwip-js": "metafloor/bwip-js"
   },
   "devDependencies": {
     "polymer": "Polymer/polymer#^1.2.0",

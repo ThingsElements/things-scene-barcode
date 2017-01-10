@@ -1,43 +1,48 @@
 var { Component, RectPath } = scene
+import Bitmap from './bitmap'
 
 const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
 
+symdesc['code39'].opts = "includetext includecheckintext"
+symdesc["ean13"].opts = "includetext paddingwidth=-5"
+symdesc["ean8"].opts = "includetext"
+
 // 참고 웹페이지.
 // http://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
-const BARCODE_REGEXP = {
-  'code11': /^[0-9\-]*$/,
-  'codebar': /^[A-D][0-9\+$:\-/.]*[A-D]$/,
-  'code39': {
-    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
-    'extended': /^[\000-\177]*$/
-  },
-  'code93': {
-    'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
-    'extended': /^[\000-\177]*$/
-  },
-  'code128': {
-    'auto': /^[\000-\177]*$/,
-    'A': /^[\000-\137]*$/,
-    'B': /^[\040-\177]*$/,
-    'C': /^(([0-9]{2})+?)*$/
-  },
-  'datamatrix': /^[\x00-\xff]*$/, // 멀티바이트 캐릭터는 안됨 ?
-  'ean8': /^\d{1,}$/,
-  'ean13': /^\d{1,}$/,
-  'industrial2of5': /^\d{1,}$/,
-  'interleaved2of5': /^\d{1,}$/,
-  'isbn': /^\d{9}[\d|X]$/,
-  'msi': /^\d{1,}$/,
-  'pdf417': {
-    'text-compaction': /^[\011\012\015\040-\177]*$/,
-    'binary-compaction': /^[\x00-\xff]*$/
-  },
-  'planet': /^\d{1,}$/,
-  'postnet': /^\d{1,}$/,
-  'ean128': /^[\000-\177\xC8\xCA-\xCD]*$/,
-  'upca': /^\d{1,}$/,
-  'upce': /^\d{1,}$/
-};
+// const BARCODE_REGEXP = {
+//   'code11': /^[0-9\-]*$/,
+//   'codebar': /^[A-D][0-9\+$:\-/.]*[A-D]$/,
+//   'code39': {
+//     'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+//     'extended': /^[\000-\177]*$/
+//   },
+//   'code93': {
+//     'normal': /^[0-9A-Z\-.$/\+%\*\s]*$/,
+//     'extended': /^[\000-\177]*$/
+//   },
+//   'code128': {
+//     'auto': /^[\000-\177]*$/,
+//     'A': /^[\000-\137]*$/,
+//     'B': /^[\040-\177]*$/,
+//     'C': /^(([0-9]{2})+?)*$/
+//   },
+//   'datamatrix': /^[\x00-\xff]*$/, // 멀티바이트 캐릭터는 안됨 ?
+//   'ean8': /^\d{1,}$/,
+//   'ean13': /^\d{1,}$/,
+//   'industrial2of5': /^\d{1,}$/,
+//   'interleaved2of5': /^\d{1,}$/,
+//   'isbn': /((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])/,
+//   'msi': /^\d{1,}$/,
+//   'pdf417': {
+//     'text-compaction': /^[\011\012\015\040-\177]*$/,
+//     'binary-compaction': /^[\x00-\xff]*$/
+//   },
+//   'planet': /^\d{1,}$/,
+//   'postnet': /^\d{1,}$/,
+//   'ean128': /^[\000-\177\xC8\xCA-\xCD]*$/,
+//   'upca': /^\d{1,}$/,
+//   'upce': /^\d{1,}$/
+// };
 
 export default class Barcode extends RectPath(Component) {
 
@@ -113,19 +118,12 @@ export default class Barcode extends RectPath(Component) {
     }
 
     // 4. 비동기 상황을 트리거링
-    let regex = BARCODE_REGEXP[symbol];
-    if(regex instanceof RegExp && !text.match(regex))
-      console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
+    // let regex = BARCODE_REGEXP[symbol];
+    // if(regex instanceof RegExp && !text.match(regex))
+    //   console.error(`[${text}] is not valid for barcode '${symbol}' - \\${regex}\\.`)
 
     try {
-      this.image.src = bwip.imageUrl({
-        symbol,
-        text,
-        alttext : showText ? '' : ' ',
-        scale_h: scale_w, // 강제로 scale_h 값을 scale_w와 같게 함.
-        scale_w,
-        rotation: 'N'
-      })
+      this.image.src = this.imageUrl()
     } catch(e) {
       console.log(e)
     }
@@ -214,6 +212,91 @@ export default class Barcode extends RectPath(Component) {
   drawText(context) {}
 
   get controls() {}
+
+  imageUrl() {
+
+    var {
+      symbol,
+      showText,
+      scale_w
+    } = this.model
+
+    var text = this.text;
+    var alttext = showText ? '' : ' ';
+    var scale_h = scale_w;
+
+    var optstr = symdesc[symbol].opts;
+
+  	// Convert the options to a dictionary object, so we can pass alttext with
+  	// spaces.
+  	var tmp = optstr.split(' ');
+  	var opts = {};
+  	for (var i = 0; i < tmp.length; i++) {
+  		if (!tmp[i]) {
+  			continue;
+  		}
+  		var eq = tmp[i].indexOf('=');
+  		if (eq == -1) {
+  			opts[tmp[i]] = true;
+  		} else {
+  			opts[tmp[i].substr(0, eq)] = tmp[i].substr(eq+1);
+  		}
+  	}
+
+  	// Add the alternate text
+  	if (alttext) {
+  		opts.alttext = alttext;
+  		opts.includetext = true;
+    }
+  	// We use mm rather than inches for height - except pharmacode2 height
+  	// which is expected to be in mm
+  	// if (height && symbol != 'pharmacode2') {
+  	// 	opts.height = height / 25.4 || 0.5;
+  	// }
+  	// Likewise, width.
+  	// if (width) {
+  	// 	opts.width = width / 25.4 || 0;
+  	// }
+
+    var bw = new BWIPJS(Module, 1); // for monichrome
+    // var bw = new BWIPJS(Module, 0); // for Anti-aliased
+
+  	// BWIPP does not extend the background color into the
+  	// human readable text.  Fix that in the bitmap interface.
+  	if (opts.backgroundcolor) {
+  		bw.bitmap(new Bitmap(opts.backgroundcolor));
+  		delete opts.backgroundcolor;
+  	} else {
+  		bw.bitmap(new Bitmap);
+  	}
+
+  	// Set the scaling factors
+  	bw.scale(scale_w, scale_h);
+
+  	// Add optional padding to the image
+  	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
+  					+opts.paddingheight*scale_h || 0);
+
+    if(!Barcode.canvas) {
+      Barcode.canvas = document.createElement('canvas');
+      Barcode.canvas.style.display = 'none';
+      Barcode.canvas.height = 1;
+    	Barcode.canvas.width  = 1;
+      document.body.appendChild(Barcode.canvas);
+    }
+
+    try {
+      BWIPP()(bw, symbol, text, opts);
+    } catch(e) {
+      // TODO 오류처리.
+      console.error(e);
+
+      var bm = bw.bitmap();
+      return bm.error(Barcode.canvas, 'N');
+    }
+
+    return bw.bitmap().show(Barcode.canvas, 'N');
+  }
 }
 
 Component.register('barcode', Barcode);

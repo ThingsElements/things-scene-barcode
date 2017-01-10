@@ -28,11 +28,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <style is="custom-style">
 
-    @font-face {
-      font-family: "Bitstream Vera Serif Bold";
-      src: url("fonts/VeraSeBd.ttf");
-    }
-
     things-scene-viewer {
       display: block;
       width: 100%;
@@ -91,11 +86,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             left: 200,
             top: 200,
-            symbol: "code39",
-            text: "1234567890",
-            alttext: "123",
+            symbol: "isbn",
+            text: "978-1-56581-231-4 52250",
             scale_h: 1,
             scale_w: 2,
+            showText: true,
             height: 50
           }, {
             type: 'barcode',
@@ -103,43 +98,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             top: 300,
             symbol: "code128",
             text: "1234567890",
-            alttext: " 123123",
             scale_h: 1,
             scale_w: 2,
             height: 50,
-            showText: 'N',
-          //   type: 'barcode',
-          //   left: 100,
-          //   top: 300,
-          //   symbol: "qrcode",
-          //   text: "http://www.hatiolab.com",
-          //   scale_h: 1,
-          //   scale_w: 2,
-          //   height: 80,
-          //   square: true,
-          //   rotation: Math.PI / 180 * 10
-          // }
-          // }, {
-          //   type: 'barcode',
-          //   left: 100,
-          //   top: 300,
-          //   symbol: "qrcode",
-          //   text: "http://www.hatiolab.com",
-          //   scale_h: 1,
-          //   scale_w: 1,
-          //   square: true,
-          //   height: 80
-          // }, {
-          //   type: 'barcode',
-          //   left: 100,
-          //   top: 300,
-          //   symbol: "qrcode",
-          //   text: "http://www.hatiolab.com",
-          //   scale_h: 1,
-          //   scale_w: 1,
-          //   height: 80,
-          //   square: true,
-          //   rotation: Math.PI / 180 * 10
+            showText: 'N'
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 2,
+            height: 80,
+            square: true,
+            rotation: Math.PI / 180 * 10
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            square: true,
+            height: 80
+          }, {
+            type: 'barcode',
+            left: 100,
+            top: 300,
+            symbol: "qrcode",
+            text: "http://www.hatiolab.com",
+            scale_h: 1,
+            scale_w: 1,
+            height: 80,
+            square: true,
+            rotation: Math.PI / 180 * 10
           }]
         };
 
