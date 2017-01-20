@@ -1,10 +1,10 @@
 var { Component, RectPath } = scene
 import Bitmap from './bitmap'
 
-const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText'];
+const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText', 'height'];
 
 symdesc['code39'].opts = "includetext includecheckintext"
-symdesc["ean13"].opts = "includetext paddingwidth=-5"
+symdesc["ean13"].opts = "includetext"
 symdesc["ean8"].opts = "includetext"
 
 // 참고 웹페이지.
@@ -223,7 +223,7 @@ export default class Barcode extends RectPath(Component) {
 
     var text = this.text;
     var alttext = showText ? '' : ' ';
-    var scale_h = scale_w;
+    var scale_h = 0.5;
 
     var optstr = symdesc[symbol].opts;
 
@@ -248,18 +248,12 @@ export default class Barcode extends RectPath(Component) {
   		opts.alttext = alttext;
   		opts.includetext = true;
     }
-  	// We use mm rather than inches for height - except pharmacode2 height
-  	// which is expected to be in mm
-  	// if (height && symbol != 'pharmacode2') {
-  	// 	opts.height = height / 25.4 || 0.5;
-  	// }
-  	// Likewise, width.
-  	// if (width) {
-  	// 	opts.width = width / 25.4 || 0;
-  	// }
 
-    var bw = new BWIPJS(Module, 1); // for monichrome
-    // var bw = new BWIPJS(Module, 0); // for Anti-aliased
+    opts.textsize = 6 + scale_w / 2;
+    opts.height = Math.round((this.model.height - 8 * scale_w) / 254 * 10) / 10;
+
+    // var bw = new BWIPJS(Module, 1); // for monochrome
+    var bw = new BWIPJS(Module, 0); // for Anti-aliased
 
   	// BWIPP does not extend the background color into the
   	// human readable text.  Fix that in the bitmap interface.
@@ -271,8 +265,12 @@ export default class Barcode extends RectPath(Component) {
   	}
 
   	// Set the scaling factors
-  	bw.scale(scale_w, scale_h);
-
+    if(symbol == 'code128')
+      bw.scale(scale_w * 2, scale_w * 2);
+    else if(symbol == 'ean13')
+      bw.scale(scale_w * 1.35, scale_w * 1.35);
+    else
+  	  bw.scale(scale_w, scale_w);
   	// Add optional padding to the image
   	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
   					+opts.paddingheight*scale_h || 0);
