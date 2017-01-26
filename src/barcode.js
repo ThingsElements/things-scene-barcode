@@ -250,7 +250,10 @@ export default class Barcode extends RectPath(Component) {
     }
 
     opts.textsize = 6 + scale_w / 2;
-    opts.height = Math.round((this.model.height - 8 * scale_w) / 254 * 10) / 10;
+
+    // 스퀘어는 높이와 넓이를 자동 조정 하므로 height를 바꿔주면 넓이도 바뀌게 됨(높이와 넓이가 서로 바뀌는 현상이 무한루프됨)
+    if(!this.model.square)
+      opts.height = Math.round((this.model.height - 8 * scale_w) / 254 * 10) / 10;
 
     // var bw = new BWIPJS(Module, 1); // for monochrome
     var bw = new BWIPJS(Module, 0); // for Anti-aliased
@@ -269,8 +272,11 @@ export default class Barcode extends RectPath(Component) {
       bw.scale(scale_w * 2, scale_w * 2);
     else if(symbol == 'ean13')
       bw.scale(scale_w * 1.35, scale_w * 1.35);
+    else if(symbol == 'interleaved2of5')
+      bw.scale(scale_w * 1, scale_w * 1);
     else
   	  bw.scale(scale_w, scale_w);
+
   	// Add optional padding to the image
   	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
   					+opts.paddingheight*scale_h || 0);
