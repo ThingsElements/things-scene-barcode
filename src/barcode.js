@@ -9,19 +9,21 @@ symdesc['code93'].opts = "includetext textxalign=center textgaps=2"
 symdesc["ean13"].opts = "includetext"
 symdesc["ean8"].opts = "includetext"
 
-function barcodeScalable(symbol){
-  if(symbol == 'code128')
+function adjustScale(symbol){
+  switch(symbol) {
+  case 'code128':
     return 2;
-  else if(symbol == 'ean13')
+  case 'ean13':
     return 1.35;
-  else if(symbol == 'interleaved2of5')    // 작아져야 하는데 1 이하론 안작아짐..?
+  case 'interleaved2of5': // 작아져야 하는데 1 이하론 안작아짐..?
     return 1;
-  else if(symbol == 'code93')
+  case 'code93':
     return 1.5;
-  else if(symbol == 'upce')
+  case 'upce':
     return 1.3;
-  else
+  default:
     return 1;
+  }
 }
 // 참고 웹페이지.
 // http://www.neodynamic.com/Products/Help/BarcodeWinControl2.5/working_barcode_symbologies.htm
@@ -161,9 +163,6 @@ export default class Barcode extends RectPath(Component) {
     if(!this.width_per_scale)
       return origin_bounds;
 
-    // var scalable = Number(barcodeScalable(this.get('symbol')))
-    // console.log(scalable)
-
     var square = !!this.get('square');
 
     var left = origin_bounds.left;
@@ -172,17 +171,20 @@ export default class Barcode extends RectPath(Component) {
     var height = square ? origin_bounds.height : bounds.height;
 
     var old_scale_w = this.get('scale_w');
-    var new_scale_w = Math.max(Math.floor(bounds.width / this.width_per_scale), 1);
+    var new_scale_w = Math.max(Math.round(bounds.width / this.width_per_scale), 1);
 
-    // old_scale_w /= scalable;
-    // new_scale_w /= scalable;
+    if(this._last_width && (this._last_width >= bounds.width && old_scale_w < new_scale_w)
+    || (this._last_width <= bounds.width && old_scale_w > new_scale_w))
+      new_scale_w = old_scale_w
+      
+    this._last_width = bounds.width;
 
     if(square) {
       // 폭과 높이가 같은 크기를 유지해야하는 square 타입의 경우에는,
       // 폭과 높이 방향 중 어느 방향으로 크게 움직였는지를 기준으로 scale 값을 결정한다.
 
       var old_scale_h = this.get('scale_h');
-      var new_scale_h = Math.max(Math.floor(bounds.height / this.height_per_scale), 1);
+      var new_scale_h = Math.max(Math.round(bounds.height / this.height_per_scale), 1);
 
       var scale = Math.abs(origin_bounds.width - bounds.width) > Math.abs(origin_bounds.height - bounds.height) ?
         new_scale_w : new_scale_h;
@@ -215,10 +217,8 @@ export default class Barcode extends RectPath(Component) {
         left -= new_scale_w * this.width_per_scale - origin_bounds.width;
 
       width += new_scale_w * this.width_per_scale - origin_bounds.width;
-      // console.log('move', 'old_scale_w : ', old_scale_w, 'new_scale_w : ', new_scale_w);
 
       if(old_scale_w !== new_scale_w) {
-        // console.log('change!!!!!', 'old_scale_w : ', old_scale_w, 'new_scale_w : ', new_scale_w);
         this.set('scale_w', new_scale_w);
         delete this.image;
       }
@@ -290,34 +290,9 @@ export default class Barcode extends RectPath(Component) {
   		bw.bitmap(new Bitmap);
   	}
 
-  	// // Set the scaling factors
-    // if(symbol == 'code128')
-    //   scale_w *= 2
-    // else if(symbol == 'ean13')
-    //   scale_w *= 1.35
-    // else if(symbol == 'interleaved2of5')    // 작아져야 하는데 1 이하론 안작아짐..?
-    //   scale_w *= 1
-    // else if(symbol == 'code93')
-    //   scale_w *= 1.5
-    // else if(symbol == 'upce')
-    //   scale_w *= 1.3
-    //
-    // bw.scale(scale_w, scale_w);
-
     // Set the scaling factors
-    if(symbol == 'code128')
-      bw.scale(scale_w * 2, scale_w * 2);
-    else if(symbol == 'ean13')
-      bw.scale(scale_w * 1.35, scale_w * 1.35);
-    else if(symbol == 'interleaved2of5')    // 작아져야 하는데 1 이하론 안작아짐..?
-      bw.scale(scale_w, scale_w);
-    else if(symbol == 'code93')
-      bw.scale(scale_w * 1.5, scale_w * 1.5)
-    else if(symbol == 'upce')
-      bw.scale(scale_w * 1.3, scale_w * 1.3)
-    else
-  	  bw.scale(scale_w, scale_w);
-
+    var adjustedScale = adjustScale(symbol)
+	  bw.scale(scale_w * adjustedScale, scale_w * adjustedScale);
 
   	// Add optional padding to the image
   	bw.bitmap().pad(+opts.paddingwidth*scale_w || 0,
