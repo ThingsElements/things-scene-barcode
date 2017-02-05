@@ -3,6 +3,14 @@ import Bitmap from './bitmap'
 
 const REDRAW_PROPS = ['symbol', 'text', 'scale_h', 'scale_w', 'rot', 'showText', 'height'];
 
+/*  opts 예제 - https://github.com/bwipp/postscriptbarcode/wiki/Options-Reference
+ *  includecheck, includecheckintext, includetext, textfont, textsize, textgaps, textxalign, textyalign, textxoffset, textyoffset
+ *  showborder, borderwidth, borderleft, borderright, bordertop, borderbottom, barcolor, backgroundcolor, bordercolor, textcolor
+ *  parse, parsefnc, height, width, inkspread, inkspreadh, inkspreadv,
+ *  addontextxoffset, addontextyoffset, addontextfont, addontextsize
+ *  guardwhitespace, guardwidth, guardheight, guardleftpos, guardrightpos, guardleftypos, guardrightypos
+ */
+
 symdesc['code39'].opts = "includetext textxalign=center textgaps=2"
 symdesc['interleaved2of5'].opts = "includetext textxalign=center textgaps=1.5"
 symdesc['code93'].opts = "includetext textxalign=center textgaps=2"
@@ -21,6 +29,14 @@ function adjustScale(symbol){
     return 1.5;
   case 'upce':
     return 1.3;
+  case 'msi':
+    return 1.3;
+  case 'plessey': // 작아져야 하는데 1 이하론 안작아짐..?
+    return 1;
+  case 'ean8':
+    return 1.3;
+  case 'ean13':
+    return 1;
   default:
     return 1;
   }
@@ -176,7 +192,7 @@ export default class Barcode extends RectPath(Component) {
     if(this._last_width && (this._last_width >= bounds.width && old_scale_w < new_scale_w)
     || (this._last_width <= bounds.width && old_scale_w > new_scale_w))
       new_scale_w = old_scale_w
-      
+
     this._last_width = bounds.width;
 
     if(square) {
