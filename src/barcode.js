@@ -17,10 +17,13 @@ symdesc['code93'].opts = "includetext textxalign=center textgaps=2"
 symdesc["ean13"].opts = "includetext"
 symdesc["ean8"].opts = "includetext"
 
-function adjustScale(symbol){
+function adjustScale(symbol, text){
   switch(symbol) {
-  case 'code128':
+  case 'code128': // 문자가 섞이면 bwip에서 크기는 너무 크게그려서 문자가 들어갈 시 1.5배로 더 작게 그리게 함
+  if(Number(text))
     return 2;
+  else
+    return 1.5;
   case 'ean13':
     return 1.35;
   case 'interleaved2of5': // 작아져야 하는데 1 이하론 안작아짐..?
@@ -307,7 +310,7 @@ export default class Barcode extends RectPath(Component) {
   	}
 
     // Set the scaling factors
-    var adjustedScale = adjustScale(symbol)
+    var adjustedScale = adjustScale(symbol, text)
 	  bw.scale(scale_w * adjustedScale, scale_w * adjustedScale);
 
   	// Add optional padding to the image
