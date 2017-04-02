@@ -91,10 +91,11 @@ export default class Barcode extends RectPath(Component) {
       height = 10,
       alpha = 1
     } = this.model
-    var text = this.text;
+
+    var text = this.text || '';
 
     /* 바코드 텍스트가 변수에 의해서 변경될 수 있으므로 매번 이전 값과 비교한다. */
-    this.prepareIf(text && (!this.image || this.lastText != text));
+    this.prepareIf(!this.image || this.lastText != text);
 
     this.lastText = text;
 
