@@ -112,13 +112,13 @@ export default class Barcode extends RectPath(Component) {
   }
 
   prepare(resolve, reject) {
-    var text = this.text;
+    // var text = this.text || '';
 
     // 1. 먼저 만족하지 않는 조건인 경우에, 바로 리턴한다.
-    if(!text) {
-      resolve(this);
-      return;
-    }
+    // if(!text) {
+    //   resolve(this);
+    //   return;
+    // }
 
     // 2. 재진입되지 않는 조건을 먼저 설정한다. (주로 핵심적인 멤버변수를 생성한다.)
     //    prepareIf(cond) 의 조건으로 핵심 멤버변수가 설정되지 않은 경우로 로직을 만들 수 있도록 한다.
@@ -264,7 +264,7 @@ export default class Barcode extends RectPath(Component) {
       scale_w
     } = this.model
 
-    var text = this.text;
+    var text = this.text || '';
     var alttext = showText ? '' : ' ';
     var scale_h = 0.5;
 
