@@ -1,3 +1,6 @@
+/*
+ * Copyright © HatioLab Inc. All rights reserved.
+ */
 // file : bwip-js/lib/canvas.js
 //
 // bwip-js bitmap interface for an HTML canvas.

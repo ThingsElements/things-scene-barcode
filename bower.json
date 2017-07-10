@@ -1,6 +1,6 @@
 {
   "name": "things-scene-barcode",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "authors": [
     "Hatio Lab. <heartyoh@hatiolab.com>"
   ],
@@ -12,7 +12,7 @@
     "seed"
   ],
   "main": "things-scene-barcode.html",
-  "license": "http://polymer.github.io/LICENSE.txt",
+  "license": "http://things-scene.hatiolab.com/EULA/",
   "homepage": "https://github.com/ThingsElements/things-scene-barcode/",
   "ignore": [
     "/.*",
