@@ -1,6 +1,6 @@
 {
   "name": "things-scene-barcode",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "authors": [
     "Hatio Lab. <heartyoh@hatiolab.com>"
   ],
@@ -20,7 +20,7 @@
   ],
   "dependencies": {
     "things-scene-core": "ThingsElements/things-scene-core#^2.0.0",
-    "bwip-js": "metafloor/bwip-js"
+    "bwip-js": "metafloor/bwip-js#^1.4.2"
   },
   "devDependencies": {
     "polymer": "Polymer/polymer#^1.2.0",
