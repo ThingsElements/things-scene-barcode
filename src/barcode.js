@@ -315,6 +315,7 @@ export default class Barcode extends RectPath(Component) {
 
     // Set the scaling factors
     var adjustedScale = adjustScale(symbol, text)
+    adjustedScale = symbol == 'datamatrix' ? adjustedScale * 0.65 : adjustedScale; // 데이터메트릭스는 스케일 조정
 	  bw.scale(scale_w * adjustedScale, scale_w * adjustedScale);
 
   	// Add optional padding to the image
